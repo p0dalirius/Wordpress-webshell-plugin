@@ -118,7 +118,10 @@ if __name__ == '__main__':
         # Disable warings of insecure connection for invalid certificates
         requests.packages.urllib3.disable_warnings()
         # Allow use of deprecated and weak cipher methods
-        requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
+        try:
+            requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
+        except AttributeError:
+            pass
         try:
             requests.packages.urllib3.contrib.pyopenssl.util.ssl_.DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
         except AttributeError:
@@ -129,6 +132,8 @@ if __name__ == '__main__':
     running = True
     while running:
         cmd = input("[webshell]> ").strip()
+        if len(cmd) == 0:
+            continue
         args = cmd.lower().split(" ")
 
         if args[0] == "exit":
@@ -144,4 +149,3 @@ if __name__ == '__main__':
                 remote_download(options.target, remote_path=args[1], local_path=args[2])
         else:
             remote_exec(options.target, cmd, verbose=options.verbose)
-
