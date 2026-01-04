@@ -12,7 +12,6 @@ import json
 
 VERIFY = True
 
-
 class CommandCompleter(object):
     def __init__(self):
         self.options = {
@@ -111,7 +110,6 @@ def show_help():
 
 if __name__ == '__main__':
     options = parseArgs()
-    global VERIFY
 
     if not options.target.startswith("https://") and not options.target.startswith("http://"):
         options.target = "http://" + options.target
